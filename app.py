@@ -23,13 +23,13 @@ HEAD
 """
 
 
-@app.route("/product", methods=["GET"])
+@app.route("/v1/product", methods=["GET"])
 def get_all_product():
     # return all products in db
     return flask.jsonify(db.get_all())
 
 
-@app.route("/product/<product_id>", methods=["GET"])
+@app.route("/v1/product/<product_id>", methods=["GET"])
 def get_product(product_id):
     # returns product by id
     index = int(product_id)
@@ -40,7 +40,7 @@ def get_product(product_id):
         return flask.Response(status=404)
 
 
-@app.route("/product", methods=["POST"])
+@app.route("/v1/product", methods=["POST"])
 def post_product():
     # adds new product, returns product id
     name = flask.request.form["name"]
@@ -51,7 +51,7 @@ def post_product():
     return flask.Response('{"product_id":' + str(product_id) + '}', status=201, mimetype='application/json')
 
 
-@app.route("/product/<product_id>", methods=["PUT"])
+@app.route("/v1/product/<product_id>", methods=["PUT"])
 def put_product(product_id):
     # create or replace product by id
     name = flask.request.form["name"]
@@ -63,7 +63,7 @@ def put_product(product_id):
     return flask.Response('{"product_id":' + str(new_index) + '}', status=201, mimetype='application/json')
 
 
-@app.route("/product/<product_id>", methods=["PATCH"])
+@app.route("/v1/product/<product_id>", methods=["PATCH"])
 def patch_product(product_id):
     # modifies product by id
     name = flask.request.form.get("name", None)
@@ -77,7 +77,7 @@ def patch_product(product_id):
         return flask.Response(status=404)
 
 
-@app.route("/product/<product_id>", methods=["DELETE"])
+@app.route("/v1/product/<product_id>", methods=["DELETE"])
 def delete_product(product_id):
     # delete product by id
     index = int(product_id)
