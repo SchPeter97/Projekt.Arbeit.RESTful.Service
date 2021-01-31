@@ -7,6 +7,7 @@ db = Database()
 
 """
 Possible requests:
+GET     /product
 GET     /product/<product_id>
 POST    /product/
 PUT     /product/<product_id>
@@ -20,6 +21,12 @@ OPTIONS /product/<product_id>
 Not fully implemented:
 HEAD
 """
+
+
+@app.route("/product", methods=["GET"])
+def get_all_product():
+    # return all products in db
+    return flask.jsonify(db.get_all())
 
 
 @app.route("/product/<product_id>", methods=["GET"])

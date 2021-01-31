@@ -30,12 +30,12 @@ class Database:
         except IndexError:
             return False
 
-    def create_or_replace(self, procuct: Product, index: int):
+    def create_or_replace(self, product: Product, index: int):
         try:
-            self.database[index] = procuct
+            self.database[index] = product
             return index
         except IndexError:
-            self.database.append(procuct)
+            self.database.append(product)
             return len(self.database) - 1
 
     def modify(self, name: str, price: str, manufacturer: str, index: int):
@@ -49,6 +49,12 @@ class Database:
             return True
         except IndexError:
             return False
+
+    def get_all(self) -> [Product]:
+        data = {}
+        for x in range(0, len(self.database)):
+            data[x] = self.database[x].serialize()
+        return data
 
     def get(self, index: int) -> Optional[Product]:
         try:
