@@ -1,0 +1,41 @@
+body {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Roboto', sans-serif;
+}
+
+td, th {
+    text-align: left;
+    min-width: 150px;
+}
+
+.button {
+    height: 25px;
+    border: none;
+    outline: none;
+    border-radius: 2px;
+    box-shadow: 2px 2px 3px 1px #ADADAD;
+    background-color: deepskyblue;
+    text-transform: uppercase;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.button:active {
+    box-shadow: 2px 3px 4px 1px #ADADAD;
+}
+
+.center-text {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}

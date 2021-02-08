@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>API test tool</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥋</text></svg>">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="productList" class="productList">
+        <h1>Produktübersicht</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produkt</th>
+                    <th>Preis</th>
+                </tr>
+            </thead>
+            <tbody id="overview_table"></tbody>
+        </table>
+        <button class="button" onclick="newProduct()">neu</button>
+    </div>
+
+
+    <div id="newProduct" class="newProduct hidden">
+        <h1>Neues Produkt</h1>
+        <table>
+            <tr>
+                <td><label for="name">Name</label></td>
+                <td><input type="text" name="name" id="name"></td> 
+            </tr>
+            <tr>
+                <td><label for="manufacturer">Hersteller</label></td>
+                <td><input type="text" name="manufacturer" id="manufacturer"></td>
+            </tr>
+            <tr>
+                <td><label for="price">Preis</label></td>
+                <td><input type="text" name="price" id="price"></td>
+            </tr>
+        </table>
+        <button class="button" onclick="saveNew()">Speichern</button>
+    </div>
+
+
+    <div id="modifyProduct" class="modifyProduct hidden">
+        <h1>Produkt ändern</h1>
+        <input type="hidden" id="modify_id">
+        <table>
+            <tr>
+                <td><label for="modify_name">Name</label></td>
+                <td><input type="text" name="modify_name" id="modify_name"></td> 
+            </tr>
+            <tr>
+                <td><label for="modify_manufacturer">Hersteller</label></td>
+                <td><input type="text" name="modify_manufacturer" id="modify_manufacturer"></td>
+            </tr>
+            <tr>
+                <td><label for="modify_price">Preis</label></td>
+                <td><input type="text" name="modify_price" id="modify_price"></td>
+            </tr>
+        </table>
+        <button class="button" onclick="saveModified()">Speichern</button>
+    </div>
+
+    <div id="viewProduct" class="viewProduct hidden">
+        <h1>Produktdetails</h1>
+        <table>
+            <tr>
+                <td>Name</td>
+                <td id="detailsName">name</td>
+            </tr>
+            <tr>
+                <td>Hersteller</td>
+                <td id="detailsManufacturer">manufacturer</td>
+            </tr>
+            <tr>
+                <td>Preis</td>
+                <td id="detailsPrice">price</td>
+            </tr>
+        </table>
+        <button class="button" onclick="backToOverview()">zurück</button>
+    </div>
+</body>
+
+<script>
+    window.onload = function () {
+        loadProductData()
+    }
+
+    function loadProductData(){
+        var request = new XMLHttpRequest();
+        request.open('GET', "http://localhost:5000/v1/product", true);
+        request.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+                productJSON = JSON.parse(this.responseText);
+                for(i = 0; i < Object.keys(productJSON).length; i++){
+                    product = productJSON[i];
+                    addOverviewRow(product.name, product.price, i)
+                }
+            }
+        };
+        request.send();
+    }
+
+    function addOverviewRow(name, price, id){
+        var table = document.getElementById("overview_table");
+        var row = table.insertRow(0);
+
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+
+        cell1.innerHTML = name;
+        cell2.innerHTML = price;
+        cell3.innerHTML = 
+            '<button class="button" onclick="view(' + id + ')">details</button>' +
+            '<button class="button" onclick="edit(' + id + ')">bearbeiten</button>' +
+            '<button class="button" onclick="del(' + id + ')">löschen</button>' ;
+    }
+
+    function refreshOverviewTable(){
+        document.getElementById("overview_table").innerHTML = "";
+        loadProductData();
+    }
+
+    function view(id){
+        document.getElementById("productList").classList.add("hidden");
+        document.getElementById("viewProduct").classList.remove("hidden");
+
+        var request = new XMLHttpRequest();
+        request.open('GET', "http://localhost:5000/v1/product/" + id, true);
+        request.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+                product = JSON.parse(this.responseText);
+                document.getElementById("detailsName").innerText = product.name;
+                document.getElementById("detailsManufacturer").innerText = product.manufacturer;
+                document.getElementById("detailsPrice").innerText = product.price;
+            }
+        }
+        request.send();
+    }
+
+    function edit(id){
+        document.getElementById("productList").classList.add("hidden");
+        document.getElementById("modifyProduct").classList.remove("hidden");
+        document.getElementById("modify_id").value = id;
+
+        var request = new XMLHttpRequest();
+        request.open('GET', "http://localhost:5000/v1/product/" + id, true);
+        request.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+                product = JSON.parse(this.responseText);
+                console.log(product)
+                document.getElementById("modify_name").value = product.name;
+                document.getElementById("modify_manufacturer").value = product.manufacturer;
+                document.getElementById("modify_price").value = product.price;
+            }
+        }
+        request.send();
+
+    }
+
+    function saveModified(){
+        document.getElementById("productList").classList.remove("hidden");
+        document.getElementById("modifyProduct").classList.add("hidden");
+        
+        name = document.getElementById("modify_name").value;
+        manufacturer = document.getElementById("modify_manufacturer").value;
+        price = document.getElementById("modify_price").value;
+        id = document.getElementById("modify_id").value;
+
+        var formData = new FormData();
+        formData.append("name", name);
+        formData.append("manufacturer", manufacturer);
+        formData.append("price", price);
+
+        var request = new XMLHttpRequest();
+        request.open('PUT', "http://localhost:5000/v1/product/" + id, true);
+        request.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+                document.getElementById("newProduct").classList.add("hidden");
+                document.getElementById("productList").classList.remove("hidden");
+                refreshOverviewTable();
+            }
+        }
+        request.send(formData);
+    }
+
+    function del(id){
+        var request = new XMLHttpRequest();
+        request.open('DELETE', "http://localhost:5000/v1/product/" + id, true);
+        request.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+                refreshOverviewTable();
+            }
+        }
+        request.send();
+    }
+
+    function newProduct(){
+        document.getElementById("productList").classList.add("hidden")
+        document.getElementById("newProduct").classList.remove("hidden")
+    }
+
+    function saveNew(){
+        name = document.getElementById("name").value;
+        document.getElementById("name").value = "";
+        manufacturer = document.getElementById("manufacturer").value;
+        document.getElementById("manufacturer").value = "";
+        price = document.getElementById("price").value;
+        document.getElementById("price").value = "";
+
+        var formData = new FormData();
+        formData.append("name", name);
+        formData.append("manufacturer", manufacturer);
+        formData.append("price", price);
+
+        var request = new XMLHttpRequest();
+        request.open('POST', "http://localhost:5000/v1/product", true);
+        request.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+                document.getElementById("newProduct").classList.add("hidden");
+                document.getElementById("productList").classList.remove("hidden");
+                refreshOverviewTable();
+            }
+        }
+        request.send(formData);
+    }
+
+    function backToOverview(){
+        document.getElementById("newProduct").classList.add("hidden");
+        document.getElementById("modifyProduct").classList.add("hidden");
+        document.getElementById("viewProduct").classList.add("hidden");
+        document.getElementById("productList").classList.remove("hidden");
+    }
+</script>
+</html>
