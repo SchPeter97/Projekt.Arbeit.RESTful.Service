@@ -1,8 +1,10 @@
 import flask
+from flask_cors import CORS
 from Database import Database
 from Product import Product
 
 app = flask.Flask(__name__)
+CORS(app)
 db = Database()
 
 """
