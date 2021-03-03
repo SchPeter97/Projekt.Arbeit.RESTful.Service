@@ -1,5 +1,5 @@
 """
-Dummy class to store data while runtime. Pre-filled with some Mock data
+Dummy class to store data while runtime. Pre-filled with some mock data
 """
 from typing import Optional
 

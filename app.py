@@ -19,9 +19,6 @@ DELETE  /product/<product_id>
 Automatic:
 OPTIONS /product
 OPTIONS /product/<product_id>
-
-Not fully implemented:
-HEAD
 """
 
 
@@ -31,14 +28,18 @@ def get_all_product():
     return flask.jsonify(db.get_all())
 
 
+# route definition
 @app.route("/v1/product/<product_id>", methods=["GET"])
+# method for route
 def get_product(product_id):
     # returns product by id
     index = int(product_id)
     product = db.get(index)
     if product is not None:
+        # json return value
         return flask.jsonify(product.serialize())
     else:
+        # json return value
         return flask.Response(status=404)
 
 

@@ -100,7 +100,7 @@
                 productJSON = JSON.parse(this.responseText);
                 for(i = 0; i < Object.keys(productJSON).length; i++){
                     product = productJSON[i];
-                    addOverviewRow(product.name, product.price, i)
+                    addOverviewRow(product.name, product.price, i);
                 }
             }
         };
@@ -108,6 +108,9 @@
     }
 
     function addOverviewRow(name, price, id){
+        if(name == null && price == null){
+            return;
+        }
         var table = document.getElementById("overview_table");
         var row = table.insertRow(0);
 
@@ -155,7 +158,6 @@
         request.onload = function () {
             if (this.status >= 200 && this.status < 400) {
                 product = JSON.parse(this.responseText);
-                console.log(product)
                 document.getElementById("modify_name").value = product.name;
                 document.getElementById("modify_manufacturer").value = product.manufacturer;
                 document.getElementById("modify_price").value = product.price;
@@ -203,8 +205,8 @@
     }
 
     function newProduct(){
-        document.getElementById("productList").classList.add("hidden")
-        document.getElementById("newProduct").classList.remove("hidden")
+        document.getElementById("productList").classList.add("hidden");
+        document.getElementById("newProduct").classList.remove("hidden");
     }
 
     function saveNew(){
