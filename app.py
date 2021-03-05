@@ -30,7 +30,7 @@ def get_all_product():
 
 # route definition
 @app.route("/v1/product/<product_id>", methods=["GET"])
-# method for route
+# method for route with id parameter
 def get_product(product_id):
     # returns product by id
     index = int(product_id)

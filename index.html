@@ -12,6 +12,7 @@
 </head>
 
 <body>
+<!-- basic site structure -->
     <div id="productList" class="productList">
         <h1>Produktübersicht</h1>
         <table>
@@ -93,13 +94,16 @@
     }
 
     function loadProductData(){
-        var request = new XMLHttpRequest();
+        // create new request
+        const request = new XMLHttpRequest();
         request.open('GET', "http://localhost:5000/v1/product", true);
         request.onload = function () {
             if (this.status >= 200 && this.status < 400) {
-                productJSON = JSON.parse(this.responseText);
-                for(i = 0; i < Object.keys(productJSON).length; i++){
-                    product = productJSON[i];
+                // response successfull, working with the result
+                const productJSON = JSON.parse(this.responseText);
+                for (var i = 0; i < Object.keys(productJSON).length; i++) {
+                    const product = productJSON[i];
+                    // populate overview table
                     addOverviewRow(product.name, product.price, i);
                 }
             }
@@ -111,12 +115,12 @@
         if(name == null && price == null){
             return;
         }
-        var table = document.getElementById("overview_table");
-        var row = table.insertRow(0);
+        const table = document.getElementById("overview_table");
+        const row = table.insertRow(0);
 
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
+        const cell1 = row.insertCell(0);
+        const cell2 = row.insertCell(1);
+        const cell3 = row.insertCell(2);
 
         cell1.innerHTML = name;
         cell2.innerHTML = price;
@@ -127,18 +131,22 @@
     }
 
     function refreshOverviewTable(){
+        // clear table, refill
         document.getElementById("overview_table").innerHTML = "";
         loadProductData();
     }
 
     function view(id){
+        // toggle visibility of divs
         document.getElementById("productList").classList.add("hidden");
         document.getElementById("viewProduct").classList.remove("hidden");
 
-        var request = new XMLHttpRequest();
+        // create new request
+        const request = new XMLHttpRequest();
         request.open('GET', "http://localhost:5000/v1/product/" + id, true);
         request.onload = function () {
             if (this.status >= 200 && this.status < 400) {
+                // request successful, display result
                 product = JSON.parse(this.responseText);
                 document.getElementById("detailsName").innerText = product.name;
                 document.getElementById("detailsManufacturer").innerText = product.manufacturer;
@@ -149,14 +157,17 @@
     }
 
     function edit(id){
+        // toggle visibility of divs
         document.getElementById("productList").classList.add("hidden");
         document.getElementById("modifyProduct").classList.remove("hidden");
         document.getElementById("modify_id").value = id;
 
-        var request = new XMLHttpRequest();
+        // new request
+        const request = new XMLHttpRequest();
         request.open('GET', "http://localhost:5000/v1/product/" + id, true);
         request.onload = function () {
             if (this.status >= 200 && this.status < 400) {
+                // request successful, display result
                 product = JSON.parse(this.responseText);
                 document.getElementById("modify_name").value = product.name;
                 document.getElementById("modify_manufacturer").value = product.manufacturer;
@@ -168,23 +179,27 @@
     }
 
     function saveModified(){
+        // toggle visibility of divs
         document.getElementById("productList").classList.remove("hidden");
         document.getElementById("modifyProduct").classList.add("hidden");
         
-        name = document.getElementById("modify_name").value;
-        manufacturer = document.getElementById("modify_manufacturer").value;
-        price = document.getElementById("modify_price").value;
-        id = document.getElementById("modify_id").value;
+        const name = document.getElementById("modify_name").value;
+        const manufacturer = document.getElementById("modify_manufacturer").value;
+        const price = document.getElementById("modify_price").value;
+        const id = document.getElementById("modify_id").value;
 
-        var formData = new FormData();
+        // create request payload as form data object
+        const formData = new FormData();
         formData.append("name", name);
         formData.append("manufacturer", manufacturer);
         formData.append("price", price);
 
-        var request = new XMLHttpRequest();
+        // new request
+        const request = new XMLHttpRequest();
         request.open('PUT', "http://localhost:5000/v1/product/" + id, true);
         request.onload = function () {
             if (this.status >= 200 && this.status < 400) {
+                // request successfull, toggle visibility of divs, reload overview table
                 document.getElementById("newProduct").classList.add("hidden");
                 document.getElementById("productList").classList.remove("hidden");
                 refreshOverviewTable();
@@ -194,10 +209,12 @@
     }
 
     function del(id){
-        var request = new XMLHttpRequest();
+        // new request
+        const request = new XMLHttpRequest();
         request.open('DELETE', "http://localhost:5000/v1/product/" + id, true);
         request.onload = function () {
             if (this.status >= 200 && this.status < 400) {
+                // request successful, refresh overview
                 refreshOverviewTable();
             }
         }
@@ -205,27 +222,31 @@
     }
 
     function newProduct(){
+        // toggle visibility of divs
         document.getElementById("productList").classList.add("hidden");
         document.getElementById("newProduct").classList.remove("hidden");
     }
 
     function saveNew(){
-        name = document.getElementById("name").value;
+        const name = document.getElementById("name").value;
         document.getElementById("name").value = "";
-        manufacturer = document.getElementById("manufacturer").value;
+        const manufacturer = document.getElementById("manufacturer").value;
         document.getElementById("manufacturer").value = "";
-        price = document.getElementById("price").value;
+        const price = document.getElementById("price").value;
         document.getElementById("price").value = "";
 
-        var formData = new FormData();
+        // request payload as form data
+        const formData = new FormData();
         formData.append("name", name);
         formData.append("manufacturer", manufacturer);
         formData.append("price", price);
 
-        var request = new XMLHttpRequest();
+        // new request
+        const request = new XMLHttpRequest();
         request.open('POST', "http://localhost:5000/v1/product", true);
         request.onload = function () {
             if (this.status >= 200 && this.status < 400) {
+                // toggle visibility of divs, refresh overview
                 document.getElementById("newProduct").classList.add("hidden");
                 document.getElementById("productList").classList.remove("hidden");
                 refreshOverviewTable();
@@ -235,6 +256,7 @@
     }
 
     function backToOverview(){
+        // reset visibility of divs
         document.getElementById("newProduct").classList.add("hidden");
         document.getElementById("modifyProduct").classList.add("hidden");
         document.getElementById("viewProduct").classList.add("hidden");
